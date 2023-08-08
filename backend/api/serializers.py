@@ -2,9 +2,20 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from djoser.serializers import UserCreateSerializer
-from recipes.models import Tag, Ingredient, Recipe, User, IngredientInRecipe, \
-    Subscribe, ShoppingCart, FavoriteRecipe
+from recipes.models import (Tag, Ingredient, Recipe, User, IngredientInRecipe,
+    Subscribe, ShoppingCart, FavoriteRecipe, )
 from drf_base64.fields import Base64ImageField
+
+
+# class Base64ImageField(serializers.ImageField):
+#
+#     def to_internal_value(self, data):
+#         if isinstance(data, str) and data.startswith('data:image'):
+#             format, imgstr = data.split(';base64,')
+#             ext = format.split('/')[-1]
+#             data = ContentFile(base64.b64decode(imgstr), name='photo.' + ext)
+#
+#         return super().to_internal_value(data)
 
 
 class TagSerializer(ModelSerializer):
@@ -80,13 +91,13 @@ class EditIngredientsSerializer(ModelSerializer):
 
     class Meta:
         model = IngredientInRecipe
-        # fields = ('id', 'amount')
         fields = ('__all__')
 
 
 class EditRecipeSerializer(ModelSerializer):
     image = Base64ImageField()
-    ingredients = EditIngredientsSerializer(many=True)
+    ingredients = EditIngredientsSerializer(
+        source='ingredient_list', many=True)
     tags = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Tag.objects.all()
     )
@@ -133,12 +144,40 @@ class EditRecipeSerializer(ModelSerializer):
 
 
 class SubscribeSerializer(ModelSerializer):
-    pass
+    recipes = serializers.SerializerMethodField(
+        read_only=True,
+        method_name='get_subs_recipes')
+    recipes_count = serializers.SerializerMethodField(
+        read_only=True
+    )
+
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count',)
+
+    def get_subs_recipes(self, obj):
+        request = self.context.get('request')
+        recipes = obj.recipes.all()
+        recipes_limit = request.query_params.get('recipes_limit')
+        if recipes_limit:
+            recipes = recipes[:int(recipes_limit)]
+        return RecipeSerializer(recipes, many=True).data
+
+    @staticmethod
+    def get_recipes_count(obj):
+        return obj.recipes.count()
 
 
 class FavoriteRecipe(ModelSerializer):
     image = Base64ImageField()
 
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+
+class AddFavoriteRecipeSerializer(ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')

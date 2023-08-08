@@ -12,11 +12,12 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
 from recipes.models import (Tag, User, Recipe, Ingredient,
-                              IngredientInRecipe,
-                              Subscribe, FavoriteRecipe)
+                            IngredientInRecipe,
+                            Subscribe, FavoriteRecipe, ShoppingCard)
 from .serializers import (TagSerializer, IngredientsSerializer,
-                         RecipeSerializer, UsersSerializer,
-                         SubscribeSerializer, EditRecipeSerializer)
+                          RecipeSerializer, UsersSerializer,
+                          SubscribeSerializer, EditRecipeSerializer,
+                          AddFavoriteRecipeSerializer)
 from .filters import RecipeFilter
 from .permissions import IsAuthorOrReadOnly
 from .pagination import MyPagination
@@ -40,7 +41,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     filter_backends = (DjangoFilterBackend,)
     permission_classes = (AllowAny,)
-    filterset_class =RecipeFilter
+    filterset_class = RecipeFilter
     pagination_class = MyPagination
 
     def get_serializer_class(self):
@@ -48,6 +49,36 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeSerializer
         else:
             return EditRecipeSerializer
+
+    @action(
+        detail=True,
+        methods=('post', 'delete'),
+        permission_classes=(IsAuthenticated,),
+        url_path='shopping_cart',
+        url_name='shopping_cart',
+    )
+    def shopping_cart(self, request, pk):
+        """Метод для управления списком покупок"""
+
+        user = request.user
+        recipe = Recipe.objects.filter(id=pk)
+
+        if request.method == 'POST':
+            if ShoppingCard.objects.filter(user=user, recipe=recipe).exists():
+                return Response("Уже в корзине",
+                                status=status.HTTP_400_BAD_REQUEST
+                                )
+            ShoppingCard.objects.create(user=user, recipe=recipe)
+            serializer = AddFavoriteRecipeSerializer(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        if request.method == 'DELETE':
+            obj = ShoppingCard.objects.filter(user=user, recipe__id=pk)
+            if obj.exists():
+                obj.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response('Рецепта нет в корзине',
+                            status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
     def get_txt(ingredients):
@@ -65,6 +96,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=False,
         methods=('get',),
+        permission_classes=(IsAuthenticated,),
         url_path='download_shopping_cart',
         url_name='download_shopping_cart',
     )
@@ -83,8 +115,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=('post', 'delete'),
         permission_classes=(IsAuthenticated,),
-        url_path='favorite_recipe',
-        url_name='favorite_recipe',
+        url_path='favorite',
+        url_name='favorite',
     )
     def favorite_recipe(self, request, pk):
         user = request.user
@@ -112,7 +144,7 @@ class UsersViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    pagination_class = (LimitOffsetPagination, )
+    pagination_class = (LimitOffsetPagination,)
 
     @action(
         detail=False,
