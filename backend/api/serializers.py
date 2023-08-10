@@ -189,7 +189,6 @@ class ShoppingCartSerializer(ModelSerializer):
     # image = Base64ImageField()
 
     class Meta:
-        """Мета-параметры сериализатора"""
 
         model = ShoppingCart
         fields = ('user', 'recipe',)
