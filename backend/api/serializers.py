@@ -182,7 +182,7 @@ class FavoriteRecipeSerializer(ModelSerializer):
 
     class Meta:
         model = FavoriteRecipe
-        fields = ('user', 'recipe', )
+        fields = ('user', 'recipe',)
 
 
 class ShoppingCartSerializer(ModelSerializer):
@@ -191,5 +191,5 @@ class ShoppingCartSerializer(ModelSerializer):
     class Meta:
         """Мета-параметры сериализатора"""
 
-        model =  ShoppingCart
-        fields = ('user', 'recipe', )
+        model = ShoppingCart
+        fields = ('user', 'recipe',)

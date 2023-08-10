@@ -216,23 +216,22 @@ class FavoriteRecipeViewSet(viewsets.ModelViewSet):
     def favorite_recipe(self, request, pk):
         user = request.user
         recipe = Recipe.objects.filter(id=pk)
-        if __name__ == '__main__':
-            if request.method == 'POST':
-                if FavoriteRecipe.objects.filter(user=user,
-                                                 recipe=recipe).exists():
-                    return Response('Этот рецепт уже в избранном',
-                                    status=status.HTTP_400_BAD_REQUEST)
-                FavoriteRecipe.objects.create(user=user, recipe=recipe)
-                serializer = RecipeSerializer(recipe)
-                return Response(serializer.data,
-                                status=status.HTTP_201_CREATED)
-            if request.method == 'DELETE':
-                obj = FavoriteRecipe.objects.filter(user=user, recipe=recipe)
-                if obj.exists():
-                    obj.delete()
-                    return Response(status=status.HTTP_204_NO_CONTENT)
-                return Response('Этого рецепта нет в избранном',
+        if request.method == 'POST':
+            if FavoriteRecipe.objects.filter(user=user,
+                                             recipe=recipe).exists():
+                return Response('Этот рецепт уже в избранном',
                                 status=status.HTTP_400_BAD_REQUEST)
+            FavoriteRecipe.objects.create(user=user, recipe=recipe)
+            serializer = RecipeSerializer(recipe)
+            return Response(serializer.data,
+                            status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE':
+            obj = FavoriteRecipe.objects.filter(user=user, recipe=recipe)
+            if obj.exists():
+                obj.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response('Этого рецепта нет в избранном',
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShoppingCartViewSet(viewsets.ModelViewSet):
