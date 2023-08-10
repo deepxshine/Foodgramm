@@ -30,7 +30,7 @@ class Tag(models.Model):
 
 class Recipe(models.Model):
     name = models.CharField(max_length=200, verbose_name='name of the recipe')
-    description = models.TextField(verbose_name='description')
+    text = models.TextField(verbose_name='description')
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='recipe',
                                verbose_name='Author')
@@ -96,7 +96,7 @@ class FavoriteRecipe(models.Model):
         ]
 
 
-class ShoppingCard(models.Model):
+class ShoppingCart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='shopping_card', )
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,

@@ -16,16 +16,17 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'pk', 'name', 'author', 'get_favorites', 'get_tags',)
+        'pk', 'name', 'author', 'get_tags',)
     list_filter = ('author', 'name', 'tags')
     search_fields = ('name',)
+    inlines = IngredientsInRecipe,
 
-    def get_favorites(self, obj):
-        return obj.favorites.count()
-
-    get_favorites.short_description = (
-        'Количество лайков'
-    )
+    # def get_favorites(self, obj):
+    #     return obj.favorites.count()
+    #
+    # # get_favorites.short_description = (
+    # #     'Количество лайков'
+    # # )
 
     def get_tags(self, obj):
         return '\n'.join(obj.tags.values_list('name', flat=True))
