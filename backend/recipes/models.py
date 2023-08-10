@@ -61,7 +61,7 @@ class Recipe(models.Model):
 class IngredientInRecipe(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
                                related_name='ingredient_list',
-                               verbose_name='recipe', )
+                               verbose_name='recipes', )
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE,
                                    verbose_name='ingredient',
                                    related_name='in_recipe'
@@ -100,7 +100,7 @@ class ShoppingCart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='shopping_card', )
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
-                               related_name='shopping_card', )
+                               related_name='shopping_card_recipe', )
 
     class Meta:
         constraints = [
