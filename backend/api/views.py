@@ -52,6 +52,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         else:
             return EditRecipeSerializer
 
+    # def perform_create(self, serializer):
+    #     serializer.save(author=self.request.user)
+
     @action(
         detail=True,
         methods=('post', 'delete'),
@@ -139,6 +142,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response('Этого рецепта нет в избранном',
                             status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class UsersViewSet(UserViewSet):

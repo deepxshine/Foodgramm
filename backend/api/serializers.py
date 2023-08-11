@@ -95,8 +95,7 @@ class EditRecipeSerializer(ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Tag.objects.all()
     )
-
-    # author = UsersSerializer(default=serializers.CurrentUserDefault(),)
+    author = UsersSerializer(required=False,)
 
     class Meta:
         model = Recipe
@@ -122,7 +121,7 @@ class EditRecipeSerializer(ModelSerializer):
     def create_ingredient(ingredients, recipe):
         for ingredient in ingredients:
             IngredientInRecipe.objects.create(recipe=recipe,
-                                              ingredient=ingredient.get(
+                                              ingredient_id=ingredient.get(
                                                   'id'),
                                               amount=ingredient.get('amount'))
 
@@ -131,7 +130,7 @@ class EditRecipeSerializer(ModelSerializer):
         ingredients = validated_data.pop('ingredient_list')
         tags = validated_data.pop('tags')
         print(1)
-        user = self.context.get('request').user.id
+        user = self.context.get('request').user
         print(user)
         recipe = Recipe.objects.create(**validated_data, author=user)
         recipe.tags.set(tags)
@@ -144,6 +143,7 @@ class EditRecipeSerializer(ModelSerializer):
             instance.ingredients.clear()
             self.create_ingredient(ingredients, instance)
         return super().update(instance, validated_data)
+
 
 
 class SubscribeSerializer(ModelSerializer):
