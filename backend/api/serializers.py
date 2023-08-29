@@ -39,8 +39,6 @@ class UsersSerializer(UserCreateSerializer):
         fields = ('__all__')
 
     def get_is_subscribed(self, obj):
-        """Метод проверки подписки"""
-
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
@@ -57,10 +55,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = Recipe
-        fields = ('id',
-                  'name', 'text', 'author', 'image', 'ingredients',
-                  'tags',
-                  'pub_date', 'cooking_time', 'is_favorited',
+        fields = ('id', 'name', 'text', 'author', 'image', 'ingredients',
+                  'tags', 'pub_date', 'cooking_time', 'is_favorited',
                   'is_in_shopping_cart',)
 
     def get_is_favorited(self, obj):
@@ -95,7 +91,7 @@ class EditRecipeSerializer(ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Tag.objects.all()
     )
-    author = UsersSerializer(required=False,)
+    author = UsersSerializer(required=False, )
 
     class Meta:
         model = Recipe
@@ -105,16 +101,19 @@ class EditRecipeSerializer(ModelSerializer):
                   'pub_date', 'cooking_time')
 
     def validate(self, data):
-        print(data)
         ingredients = data['ingredient_list']
 
         ingredients_list = []
-        for i in ingredients:
-            ingredient = get_object_or_404(Ingredient, id=i['id'])
-            if ingredient in ingredients_list:
-                raise serializers.ValidationError(
-                    'Данный ингредиент уже используется')
-            ingredients_list.append(ingredient)
+        for ingr in ingredients:
+            if ingr.get(id):
+                print(data['ingredient_list'])
+                # ingredient = get_object_or_404(Ingredient, id=ingr['id'])
+                ingredient = Ingredient.objects.filter(id=ingr['id'])
+                print(ingredient)
+                if ingredient in ingredients_list:
+                    raise serializers.ValidationError(
+                        'Данный ингредиент уже используется')
+                ingredients_list.append(ingredient)
         return data
 
     @staticmethod
@@ -126,24 +125,27 @@ class EditRecipeSerializer(ModelSerializer):
                                               amount=ingredient.get('amount'))
 
     def create(self, validated_data):
-        print(1)
         ingredients = validated_data.pop('ingredient_list')
         tags = validated_data.pop('tags')
-        print(1)
         user = self.context.get('request').user
-        print(user)
         recipe = Recipe.objects.create(**validated_data, author=user)
         recipe.tags.set(tags)
-        self.create_ingredient(ingredients, recipe)
         return recipe
 
     def update(self, instance, validated_data):
-        if 'ingredient_list' in validated_data:
-            ingredients = validated_data.pop('ingredient_list')
-            instance.ingredients.clear()
-            self.create_ingredient(ingredients, instance)
-        return super().update(instance, validated_data)
+        ingredients = validated_data.pop('ingredient_list')
+        instance = super().update(instance, validated_data)
 
+        for ingr in ingredients:
+            if ingr:
+                print(ingr)
+                ingredient = ingr['id']
+                amount = ingr['amount']
+                IngredientInRecipe.objects.filter(
+                    amount=amount,
+                    ingredient=ingredient
+                ).update()
+        return instance
 
 
 class SubscribeSerializer(ModelSerializer):
@@ -179,17 +181,7 @@ class SubscribeSerializer(ModelSerializer):
         return Subscribe.objects.filter(user=user, author=obj.id).exists()
 
 
-# class FavoriteRecipeSerializer(ModelSerializer):
-#     # image = Base64ImageField()
-#
-#     class Meta:
-#         model = Recipe
-#         fields = ('id', 'name', 'image', 'cooking_time')
-
-
 class ShoppingCartAndFavoriteRecipeSerializer(ModelSerializer):
-    # image = Base64ImageField()
-
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
