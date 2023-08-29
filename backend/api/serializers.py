@@ -5,6 +5,7 @@ from djoser.serializers import UserCreateSerializer
 from recipes.models import (Tag, Ingredient, Recipe, User, IngredientInRecipe,
                             Subscribe, ShoppingCart, FavoriteRecipe, )
 from drf_base64.fields import Base64ImageField
+from django.db.models import F
 
 
 # class Base64ImageField(serializers.ImageField):
@@ -45,12 +46,25 @@ class UsersSerializer(UserCreateSerializer):
         return Subscribe.objects.filter(user=user, author=obj.id).exists()
 
 
+class IngredientRecipeSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit')
+
+    class Meta:
+        model = IngredientInRecipe
+        fields = ('id', 'name', 'measurement_unit', 'amount')
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = UsersSerializer(default=serializers.CurrentUserDefault(),
                              required=False)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+    ingredients = serializers.SerializerMethodField()
+    amount = F('ingredient_list__amount')
 
     class Meta:
 
@@ -58,6 +72,14 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'text', 'author', 'image', 'ingredients',
                   'tags', 'pub_date', 'cooking_time', 'is_favorited',
                   'is_in_shopping_cart',)
+
+    def get_ingredients(self, obj):
+        return obj.ingredients.values(
+            'id',
+            'name',
+            'measurement_unit',
+            amount=F('ingredient_list__amount')
+        )
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
@@ -106,10 +128,8 @@ class EditRecipeSerializer(ModelSerializer):
         ingredients_list = []
         for ingr in ingredients:
             if ingr.get(id):
-                print(data['ingredient_list'])
                 # ingredient = get_object_or_404(Ingredient, id=ingr['id'])
                 ingredient = Ingredient.objects.filter(id=ingr['id'])
-                print(ingredient)
                 if ingredient in ingredients_list:
                     raise serializers.ValidationError(
                         'Данный ингредиент уже используется')
