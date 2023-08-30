@@ -131,7 +131,7 @@ class EditRecipeSerializer(ModelSerializer):
                                               amount=ingredient.get('amount'))
 
     def create(self, validated_data):
-        ingredients = validated_data.pop('ingredient_list')
+        validated_data.pop('ingredient_list')
         tags = validated_data.pop('tags')
         user = self.context.get('request').user
         recipe = Recipe.objects.create(**validated_data, author=user)

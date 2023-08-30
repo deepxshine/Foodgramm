@@ -47,8 +47,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
             return RecipeSerializer
-        else:
-            return EditRecipeSerializer
+        return EditRecipeSerializer
 
     @action(
         detail=True,
