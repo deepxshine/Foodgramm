@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.db import models
 from django.core.validators import MinValueValidator
+from django.db import models
 
 User = get_user_model()
 
@@ -69,8 +69,7 @@ class IngredientInRecipe(models.Model):
     amount = models.PositiveSmallIntegerField(
         verbose_name='amount',
         validators=[MinValueValidator(1,
-                                      message=f'Ингредиент должен хотя бы '
-                                              f'раз быть в рецепте!'), ])
+                                      message='Вы указали 0!'), ])
 
     class Meta:
         constraints = [
@@ -132,20 +131,3 @@ class Subscribe(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['author', 'user'],
                                     name='unique_sub')]
-
-
-class ShoppingCart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='cart_user', verbose_name='user')
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
-                               related_name='cart_recipe',
-                               verbose_name='recipe')
-
-    class Meta:
-        verbose_name = 'shopping card'
-        verbose_name_plural = 'shopping cards'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'recipe'], name='unique_item_in_shoppingcart'
-            )
-        ]

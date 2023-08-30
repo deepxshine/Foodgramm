@@ -1,22 +1,11 @@
-from django.shortcuts import get_object_or_404
+from django.db.models import F
+from djoser.serializers import UserCreateSerializer
+from drf_base64.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from djoser.serializers import UserCreateSerializer
-from recipes.models import (Tag, Ingredient, Recipe, User, IngredientInRecipe,
-                            Subscribe, ShoppingCart, FavoriteRecipe, )
-from drf_base64.fields import Base64ImageField
-from django.db.models import F
 
-
-# class Base64ImageField(serializers.ImageField):
-#
-#     def to_internal_value(self, data):
-#         if isinstance(data, str) and data.startswith('data:image'):
-#             format, imgstr = data.split(';base64,')
-#             ext = format.split('/')[-1]
-#             data = ContentFile(base64.b64decode(imgstr), name='photo.' + ext)
-#
-#         return super().to_internal_value(data)
+from recipes.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
+                            Recipe, ShoppingCart, Subscribe, Tag, User)
 
 
 class TagSerializer(ModelSerializer):
@@ -36,7 +25,6 @@ class UsersSerializer(UserCreateSerializer):
 
     class Meta:
         model = User
-        # fields = ('id', 'first_name', 'last_name', 'username', 'email',)
         fields = ('__all__')
 
     def get_is_subscribed(self, obj):
@@ -64,7 +52,6 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
     ingredients = serializers.SerializerMethodField()
-    amount = F('ingredient_list__amount')
 
     class Meta:
 
@@ -128,7 +115,6 @@ class EditRecipeSerializer(ModelSerializer):
         ingredients_list = []
         for ingr in ingredients:
             if ingr.get(id):
-                # ingredient = get_object_or_404(Ingredient, id=ingr['id'])
                 ingredient = Ingredient.objects.filter(id=ingr['id'])
                 if ingredient in ingredients_list:
                     raise serializers.ValidationError(

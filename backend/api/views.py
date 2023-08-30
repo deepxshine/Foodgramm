@@ -1,26 +1,25 @@
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from djoser.views import UserViewSet
-from rest_framework import status, viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
+from djoser.views import UserViewSet
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
-                                        SAFE_METHODS,
-                                        IsAuthenticated, AllowAny)
-from django.db.models import Sum
+from rest_framework.permissions import (SAFE_METHODS, AllowAny,
+                                        IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from recipes.models import (Tag, User, Recipe, Ingredient,
-                            IngredientInRecipe,
-                            Subscribe, FavoriteRecipe, ShoppingCart)
-from .serializers import (TagSerializer, IngredientsSerializer,
-                          RecipeSerializer, UsersSerializer,
-                          SubscribeSerializer, EditRecipeSerializer,
-                          ShoppingCartAndFavoriteRecipeSerializer)
 from .filters import RecipeFilter
-from .permissions import IsAuthorOrReadOnly
 from .pagination import MyPagination
+from .permissions import IsAuthorOrReadOnly
+from .serializers import (EditRecipeSerializer, IngredientsSerializer,
+                          RecipeSerializer,
+                          ShoppingCartAndFavoriteRecipeSerializer,
+                          SubscribeSerializer, TagSerializer, UsersSerializer)
+from recipes.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
+                            Recipe, ShoppingCart, Subscribe, Tag, User)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):

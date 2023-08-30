@@ -7,6 +7,3 @@ class IsAuthorOrReadOnly(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return obj.author == request.user or request.method in SAFE_METHODS
-
-
-# docker build -t deepxshine/foodgramm:v22.08.2023 .
