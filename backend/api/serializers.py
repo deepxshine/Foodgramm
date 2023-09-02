@@ -5,8 +5,8 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
-                            Recipe, ShoppingCart, Subscribe, Tag, User,
-                            TagRecipe)
+                            Recipe, ShoppingCart, Subscribe, Tag, TagRecipe,
+                            User)
 
 
 class TagSerializer(ModelSerializer):
