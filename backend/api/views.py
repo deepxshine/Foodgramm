@@ -58,7 +58,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         user = request.user
-        recipe = Recipe.objects.filter(id=pk)
+        # recipe = Recipe.objects.filter(id=pk)
+        recipe = get_object_or_404(Recipe, id=pk)
 
         if request.method == 'POST':
             if ShoppingCart.objects.filter(user=user, recipe_id=pk).exists():
@@ -66,8 +67,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                 status=status.HTTP_400_BAD_REQUEST
                                 )
             ShoppingCart.objects.create(user=user, recipe_id=pk)
-            serializer = ShoppingCartAndFavoriteRecipeSerializer(recipe,
-                                                                 many=True)
+            serializer = ShoppingCartAndFavoriteRecipeSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == 'DELETE':
@@ -118,15 +118,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def favorite_recipe(self, request, pk):
         user = request.user
-        recipe = Recipe.objects.filter(id=pk)
+        recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
             if FavoriteRecipe.objects.filter(user=user,
                                              recipe_id=pk).exists():
                 return Response('Этот рецепт уже в избранном',
                                 status=status.HTTP_400_BAD_REQUEST)
             FavoriteRecipe.objects.create(user=user, recipe_id=pk)
-            serializer = ShoppingCartAndFavoriteRecipeSerializer(recipe,
-                                                                 many=True)
+            serializer = ShoppingCartAndFavoriteRecipeSerializer(recipe)
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
@@ -153,11 +152,11 @@ class UsersViewSet(UserViewSet):
     )
     def get_subs(self, request):
         user = request.user
-        q = User.objects.filter(author__user=user)
-        if not q:
+        subscribers = User.objects.filter(author__user=user)
+        if not subscribers:
             return Response('У вас нет подписок!',
                             status=status.HTTP_400_BAD_REQUEST)
-        pages = self.paginate_queryset(q)
+        pages = self.paginate_queryset(subscribers)
         serializer = SubscribeSerializer(pages, many=True,
                                          context={'request': request})
         return self.get_paginated_response(serializer.data)

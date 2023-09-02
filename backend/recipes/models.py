@@ -32,10 +32,10 @@ class Recipe(models.Model):
     name = models.CharField(max_length=200, verbose_name='name of the recipe')
     text = models.TextField(verbose_name='description')
     author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='recipe',
+                               related_name='recipes',
                                verbose_name='Author')
     image = models.ImageField(verbose_name='image', upload_to='static/recipe/',
-                              blank=True, null=True)
+                              blank=False, null=False)
     ingredients = models.ManyToManyField(Ingredient,
                                          through='IngredientInRecipe',
                                          related_name='recipes',
@@ -97,9 +97,9 @@ class FavoriteRecipe(models.Model):
 
 class ShoppingCart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='shopping_card', )
+                             related_name='shopping_cart', )
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
-                               related_name='shopping_card_recipe', )
+                               related_name='shopping_cart_recipe', )
 
     class Meta:
         constraints = [

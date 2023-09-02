@@ -5,7 +5,8 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
-                            Recipe, ShoppingCart, Subscribe, Tag, User)
+                            Recipe, ShoppingCart, Subscribe, Tag, User,
+                            TagRecipe)
 
 
 class TagSerializer(ModelSerializer):
@@ -114,7 +115,7 @@ class EditRecipeSerializer(ModelSerializer):
 
         ingredients_list = []
         for ingr in ingredients:
-            if ingr.get(id):
+            if ingr.get('id'):
                 ingredient = Ingredient.objects.filter(id=ingr['id'])
                 if ingredient in ingredients_list:
                     raise serializers.ValidationError(
@@ -125,33 +126,40 @@ class EditRecipeSerializer(ModelSerializer):
     @staticmethod
     def create_ingredient(ingredients, recipe):
         for ingredient in ingredients:
-            IngredientInRecipe.objects.create(recipe=recipe,
-                                              ingredient_id=ingredient.get(
-                                                  'id'),
-                                              amount=ingredient.get('amount'))
+            IngredientInRecipe.objects.create(
+                recipe=recipe,
+                ingredient_id=ingredient.get('id'),
+                amount=ingredient.get('amount'))
 
     def create(self, validated_data):
-        validated_data.pop('ingredient_list')
+        ingredients = validated_data.pop('ingredient_list')
         tags = validated_data.pop('tags')
+
         user = self.context.get('request').user
         recipe = Recipe.objects.create(**validated_data, author=user)
         recipe.tags.set(tags)
+        for element in ingredients:
+            id = element['id']
+            ingredient = Ingredient.objects.get(pk=id)
+            amount = element['amount']
+            IngredientInRecipe.objects.create(
+                ingredient=ingredient, recipe=recipe, amount=amount)
         return recipe
 
     def update(self, instance, validated_data):
+        IngredientInRecipe.objects.filter(recipe=instance).delete()
+        TagRecipe.objects.filter(recipe=instance).delete()
+        tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredient_list')
-        instance = super().update(instance, validated_data)
-
-        for ingr in ingredients:
-            if ingr:
-                print(ingr)
-                ingredient = ingr['id']
-                amount = ingr['amount']
-                IngredientInRecipe.objects.filter(
-                    amount=amount,
-                    ingredient=ingredient
-                ).update()
-        return instance
+        instance.tags.set(tags)
+        for element in ingredients:
+            id = element['id']
+            ingredient = Ingredient.objects.get(pk=id)
+            amount = element['amount']
+            IngredientInRecipe.objects.create(
+                ingredient=ingredient, recipe=instance, amount=amount
+            )
+        return super().update(instance, validated_data)
 
 
 class SubscribeSerializer(ModelSerializer):
