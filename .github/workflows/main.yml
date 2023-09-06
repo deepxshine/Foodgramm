@@ -37,7 +37,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_LOGIN }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      - name: Push to Docker Hub
+      - name: Push back to Docker Hub
         uses: docker/build-push-action@v2
         with:
           push: true
