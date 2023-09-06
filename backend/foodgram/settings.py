@@ -16,6 +16,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'host.docker.internal',
     '127.0.0.1',
+    '158.160.8.160',
 ]
 
 # Application definition
