@@ -6,7 +6,6 @@ from foodgram.settings import CSV_FILES_DIR
 from recipes.models import Ingredient
 
 
-
 class Command(BaseCommand):
     help = 'Добавление ингредиентов в базу данных'
 
