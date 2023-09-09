@@ -15,7 +15,6 @@ docker-compose exec backend python manage.py collectstatic --no-input
 ```
 
 
-
 ## Для авторизованных пользователей:
 
 Доступна главная страница.
