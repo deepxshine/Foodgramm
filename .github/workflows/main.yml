@@ -68,4 +68,4 @@ jobs:
             echo DB_HOST=${{ secrets.DB_HOST }} >> .env
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             sudo docker-compose up -d --build
-            sudo docker exec deepxshine_backend_1 python manage.py migrate
+            sudo docker exec ${{ secrets.DOCKER_HUB_LOGIN }}_backend_1 python manage.py migrate
