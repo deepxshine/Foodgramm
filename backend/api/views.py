@@ -58,7 +58,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         user = request.user
-        # recipe = Recipe.objects.filter(id=pk)
         recipe = get_object_or_404(Recipe, id=pk)
 
         if request.method == 'POST':
@@ -101,7 +100,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
 
         ingredients = IngredientInRecipe.objects.filter(
-            recipe__cart_recipe__user=request.user
+            recipe__shopping_cart__user=request.user
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
@@ -141,7 +140,7 @@ class UsersViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    pagination_class = (LimitOffsetPagination,)
+    pagination_class = LimitOffsetPagination
 
     @action(
         detail=False,

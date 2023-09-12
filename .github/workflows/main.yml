@@ -70,3 +70,4 @@ jobs:
             sudo docker-compose up -d --build
             sudo docker exec ${{ secrets.DOCKER_HUB_LOGIN }}_backend_1 python manage.py migrate
             sudo docker exec ${{ secrets.DOCKER_HUB_LOGIN }}_backend_1 python manage.py add_ingredients_to_db
+            exec ${{ secrets.DOCKER_HUB_LOGIN }}_backend_1 python manage.py collectstatic --no-input  

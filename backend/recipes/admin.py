@@ -17,7 +17,7 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'pk', 'name', 'author', 'get_tags',)
+        'pk', 'name', 'author', 'get_tags', 'get_favorites')
     list_filter = ('author', 'name', 'tags')
     search_fields = ('name',)
     inlines = IngredientsInRecipe,
