@@ -33,7 +33,8 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientsSerializer
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
+    filterset_class = IngredientFilter
+    search_fields = ('^name',)
     pagination_class = MyPagination
 
 
