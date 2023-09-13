@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import filters, status, viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (SAFE_METHODS, AllowAny,
@@ -32,10 +32,10 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientsSerializer
-    filter_backends = (filters.SearchFilter,)
-    filterset_class = IngredientFilter
+    permission_classes = (AllowAny,)
+    filter_backends = (IngredientFilter,)
     search_fields = ('^name',)
-    pagination_class = MyPagination
+    pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
