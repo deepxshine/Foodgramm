@@ -82,7 +82,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         if request is None or request.user.is_anonymous:
             return False
         return ShoppingCart.objects.filter(
-            user=request.user, author=obj
+            user=request.user, recipe=obj
         ).exists()
 
 
