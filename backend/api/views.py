@@ -116,7 +116,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         # ])
         shopping_list = ''
         for ingredient in ingredients:
-            shopping_list+=f'{ingredient["name"]} -  '
+            shopping_list += f'{ingredient["name"]} -  '
             f'{ingredient["amount_sum"]} {ingredient["unit"]} \n'
         return HttpResponse(shopping_list, content_type='text/plain')
 
