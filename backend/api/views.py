@@ -114,7 +114,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         #     f'{ingredient["amount_sum"]}'
         #     for ingredient in ingredients
         # ])
-        shopping_list = ''
+        shopping_list = 'Ваш список покупок'
         for ingredient in ingredients:
             shopping_list += (f'{ingredient["name"]} -  '
                               f'{ingredient["amount_sum"]}'
