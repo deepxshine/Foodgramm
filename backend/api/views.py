@@ -11,7 +11,7 @@ from rest_framework.permissions import (SAFE_METHODS, AllowAny,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from .filters import RecipeFilter
+from .filters import IngredientFilter, RecipeFilter
 from .pagination import MyPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (EditRecipeSerializer, IngredientsSerializer,
