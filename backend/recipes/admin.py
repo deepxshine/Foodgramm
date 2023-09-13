@@ -20,10 +20,11 @@ class RecipeAdmin(admin.ModelAdmin):
         'pk', 'name', 'author', 'get_tags', 'get_favorites')
     list_filter = ('author', 'name', 'tags')
     search_fields = ('name',)
+    readonly_fields = 'get_favorites'
     inlines = IngredientsInRecipe,
 
     def get_favorites(self, obj):
-        return obj.favorites.count()
+        return obj.favorite_recipe.count()
 
     def get_tags(self, obj):
         return '\n'.join(obj.tags.values_list('name', flat=True))
