@@ -20,7 +20,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'pk', 'name', 'author', 'get_tags', 'get_favorites')
     list_filter = ('author', 'name', 'tags')
     search_fields = ('name',)
-    readonly_fields = 'get_favorites'
+    readonly_fields = ('get_favorites', )
     inlines = IngredientsInRecipe,
 
     def get_favorites(self, obj):
