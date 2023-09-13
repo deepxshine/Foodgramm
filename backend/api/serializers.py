@@ -26,7 +26,8 @@ class UsersSerializer(UserCreateSerializer):
 
     class Meta:
         model = User
-        fields = ('__all__')
+        fields = ('email', 'id', 'username', 'first_name', 'last_name',
+                  'is_subscribed')
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
@@ -169,7 +170,7 @@ class SubscribeSerializer(ModelSerializer):
     recipes_count = serializers.SerializerMethodField(
         read_only=True
     )
-    is_subscribed = serializers.SerializerMethodField()
+    get_is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
