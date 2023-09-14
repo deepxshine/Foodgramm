@@ -170,7 +170,8 @@ class SubscribeSerializer(ModelSerializer):
     recipes_count = serializers.SerializerMethodField(
         read_only=True
     )
-    # get_is_subscribed = serializers.SerializerMethodField()
+
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -189,11 +190,11 @@ class SubscribeSerializer(ModelSerializer):
     def get_recipes_count(obj):
         return obj.recipes.count()
 
-    # def get_is_subscribed(self, obj):
-    #     user = self.context.get('request').user
-    #     if user.is_anonymous:
-    #         return False
-    #     return Subscribe.objects.filter(user=user, author=obj.id).exists()
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Subscribe.objects.filter(user=user, author=obj.id).exists()
 
 
 class ShoppingCartAndFavoriteRecipeSerializer(ModelSerializer):
