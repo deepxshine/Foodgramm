@@ -177,6 +177,7 @@ class SubscribeSerializer(ModelSerializer):
         model = User
         fields = ('email', 'id', 'username', 'first_name', 'last_name',
                   'is_subscribed', 'recipes', 'recipes_count',)
+        read_only_fields = ('is_subscribed',)
 
     def get_subs_recipes(self, obj):
         request = self.context.get('request')
