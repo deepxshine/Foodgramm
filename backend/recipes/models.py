@@ -122,9 +122,9 @@ class TagRecipe(models.Model):
 
 class Subscribe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='author')
+                               related_name='subscribe')
     user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='user')
+                             related_name='subscriber')
 
     class Meta:
         constraints = [
