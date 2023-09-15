@@ -185,7 +185,8 @@ class SubscribeSerializer(ModelSerializer):
         recipes_limit = request.query_params.get('recipes_limit')
         if recipes_limit:
             recipes = recipes[:int(recipes_limit)]
-        return RecipeSerializer(recipes, many=True).data
+        return RecipeSerializer(recipes, many=True,
+                                context={'request': request}).data
 
     @staticmethod
     def get_recipes_count(obj):
