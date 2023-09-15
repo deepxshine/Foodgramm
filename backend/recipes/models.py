@@ -68,7 +68,7 @@ class IngredientInRecipe(models.Model):
     amount = models.PositiveSmallIntegerField(
         verbose_name='amount',
         validators=[MinValueValidator(1,
-                                      message='Вы указали 0!'), ])
+                                      message='Вы указали меньше 0!'), ])
 
     class Meta:
         constraints = [
