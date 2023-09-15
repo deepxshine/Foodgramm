@@ -169,7 +169,7 @@ class UsersViewSet(UserViewSet):
     )
     def get_subs(self, request):
         user = request.user
-        subscribers = User.objects.filter(author__user=user)
+        subscribers = Subscribe.objects.filter(author__user=user)
         if not subscribers:
             return Response('У вас нет подписок!',
                             status=status.HTTP_400_BAD_REQUEST)
