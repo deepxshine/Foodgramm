@@ -23,8 +23,6 @@ class IngredientsSerializer(ModelSerializer):
 
 class UsersSerializer(UserCreateSerializer):
     is_subscribed = serializers.SerializerMethodField()
-    # password = serializers.CharField(style={"input_type": "password"},
-    #                                  write_only=True)
 
     class Meta:
         model = User
