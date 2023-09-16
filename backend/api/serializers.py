@@ -23,6 +23,8 @@ class IngredientsSerializer(ModelSerializer):
 
 class UsersSerializer(UserCreateSerializer):
     is_subscribed = serializers.SerializerMethodField()
+    password = serializers.CharField(style={"input_type": "password"},
+                                     write_only=True)
 
     class Meta:
         model = User
@@ -205,11 +207,11 @@ class ShoppingCartAndFavoriteRecipeSerializer(ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class CustomUserCreateSerializer(UserCreateSerializer):
-    password = serializers.CharField(style={"input_type": "password"},
-                                     write_only=True)
-
-    class Meta(UserCreateSerializer.Meta):
-        model = User
-        fields = (
-            'email', 'id', 'username', 'first_name', 'last_name', 'password')
+# class CustomUserCreateSerializer(UserCreateSerializer):
+#     password = serializers.CharField(style={"input_type": "password"},
+#                                      write_only=True)
+#
+#     class Meta(UserCreateSerializer.Meta):
+#         model = User
+#         fields = (
+#             'email', 'id', 'username', 'first_name', 'last_name', 'password')
