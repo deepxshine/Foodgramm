@@ -19,7 +19,8 @@ class RecipeFilter(filters.FilterSet):
         print(value)
         if value:
             user = self.request.user
-            return queryset.filter(favorite_recipe__user_id=user.id)
+            return queryset.filter(
+                favorite_recipe__user=user)
         return queryset
 
     def get_is_recipe_in_shoppingcart_filter(self, queryset, name, value):
