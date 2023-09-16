@@ -119,7 +119,7 @@ class EditRecipeSerializer(ModelSerializer):
         ingredients_list = []
         for ingr in ingredients:
             if ingr.get('id'):
-                ingredient = Ingredient.objects.filter(id=ingr['id'])
+                ingredient = Ingredient.objects.get(id=ingr['id'])
                 if ingredient in ingredients_list:
                     raise serializers.ValidationError(
                         'Данный ингредиент уже используется')
