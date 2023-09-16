@@ -203,3 +203,11 @@ class ShoppingCartAndFavoriteRecipeSerializer(ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
+
+
+class CustomCreateUserSerializer(UserCreateSerializer):
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name',
+                  'last_name', 'password')
+        extra_kwargs = {'password': {'write_only': True}}
